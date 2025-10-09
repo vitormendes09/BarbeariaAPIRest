@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment files
+.env
+*.env
+
+# Docker
+docker-compose.override.yml
+
+# Application
+application-dev.properties

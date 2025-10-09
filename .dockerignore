@@ -1,0 +1,14 @@
+.git
+.gitignore
+README.md
+HELP.md
+target/
+!target/*.jar
+.mvn/
+**/mvnw
+**/mvnw.cmd
+**/.gitignore
+**/.dockerignore
+**/container.env
+**/README.md
+**/HELP.md
