@@ -10,13 +10,13 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3307:3306"  # Mudei de 3306 para 3307
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - barbearia-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       timeout: 20s
       retries: 10
     command: --default-authentication-plugin=mysql_native_password
@@ -25,7 +25,7 @@ services:
     image: redis:7-alpine
     container_name: barbearia-redis
     ports:
-      - "6380:6379"  # Mudei de 6379 para 6380
+      - "6380:6379"
     networks:
       - barbearia-network
     healthcheck:
@@ -37,6 +37,7 @@ services:
     build: .
     container_name: barbearia-app
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
