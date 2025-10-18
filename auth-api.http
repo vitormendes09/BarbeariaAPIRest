@@ -1,0 +1,56 @@
+### ==================================================
+### BARBEARIA API - AUTENTICAÇÃO (PÚBLICO)
+### ==================================================
+
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Registrar Novo Cliente
+# @name register_cliente
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "client@email.com",
+  "password": "senha123"
+}
+
+### Registrar Novo Barbeiro
+# @name register_barbeiro
+POST {{baseUrl}}/api/auth/register-barbeiro
+Content-Type: {{contentType}}
+
+{
+  "email": "barbere@email.com",
+  "password": "senha123"
+}
+
+### Registrar Administrador
+# @name register_admin
+POST {{baseUrl}}/api/auth/register-admin
+Content-Type: {{contentType}}
+
+{
+  "email": "admin.teste@email.com",
+  "password": "senha123"
+}
+
+### Login Genérico (Use conforme necessidade)
+# @name login_generico
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "seu-email@aqui.com",
+  "password": "sua-senha"
+}
+
+> {%
+  if (response.status === 200) {
+    client.log(" Login realizado com sucesso!");
+    client.log(" Token: " + response.body.token);
+    client.log(" Usuário: " + response.body.email);
+    client.log(" Role: " + response.body.role);
+    client.log(" ID: " + response.body.userId);
+  }
+%}

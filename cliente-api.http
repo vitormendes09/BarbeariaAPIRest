@@ -1,0 +1,108 @@
+### ==================================================
+### BARBEARIA API - FLUXO CLIENTE
+### ==================================================
+
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+# 🔐 TOKEN DO CLIENTE - Execute o login primeiro!
+@clienteToken = {{cliente_login.response.body.token}}
+
+### REGISTRAR CLIENTE (se necessário)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "cliente.completo@test.com",
+  "password": "cliente123"
+}
+
+### LOGIN COMO CLIENTE
+# @name cliente_login
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "cliente.completo@test.com",
+  "password": "cliente123"
+}
+
+> {%
+  if (response.status === 200) {
+    client.global.set("clienteToken", response.body.token);
+    client.log("✅ Cliente logado com sucesso!");
+    client.log("🎭 Role: " + response.body.role);
+  }
+%}
+
+### 3️⃣ 🔍 CONSULTAS DISPONÍVEIS
+
+### Listar Todos os Barbeiros Ativos
+GET {{baseUrl}}/api/barbeiros
+Authorization: Bearer {{clienteToken}}
+
+### Listar Todos os Serviços Ativos do Sistema
+GET {{baseUrl}}/api/barbeiro/servicos/todos
+Authorization: Bearer {{clienteToken}}
+
+### Listar Horários Disponíveis de um Barbeiro
+GET {{baseUrl}}/api/agendamentos/disponiveis?barbeiroId=11&data=2025-01-15
+Authorization: Bearer {{clienteToken}}
+
+### AGENDAMENTOS
+
+### Criar Novo Agendamento (Corte + Barba)
+# @name criar_agendamento
+POST {{baseUrl}}/api/agendamentos
+Authorization: Bearer {{clienteToken}}
+Content-Type: {{contentType}}
+
+{
+  "barbeiroId": 2,
+  "dataHoraInicio": "2024-01-15T10:00:00",
+  "servicosIds": [1, 2]
+}
+
+### Criar Agendamento - Apenas Corte
+POST {{baseUrl}}/api/agendamentos
+Authorization: Bearer {{clienteToken}}
+Content-Type: {{contentType}}
+
+{
+  "barbeiroId": 2,
+  "dataHoraInicio": "2024-01-15T14:00:00",
+  "servicosIds": [1]
+}
+
+### MEUS AGENDAMENTOS
+
+### Listar Meus Agendamentos
+GET {{baseUrl}}/api/agendamentos/meus
+Authorization: Bearer {{clienteToken}}
+
+### Cancelar Agendamento
+PATCH {{baseUrl}}/api/agendamentos/1/cancelar
+Authorization: Bearer {{clienteToken}}
+
+### 6️⃣ 🔍 DEBUG
+
+### Debug - Contexto de Segurança
+GET {{baseUrl}}/api/debug/security-context
+Authorization: Bearer {{clienteToken}}
+
+
+### Listar Serviços Públicos (NOVO)
+GET {{baseUrl}}/api/servicos
+Authorization: Bearer {{clienteToken}}
+
+
+### Criar Agendamento (COM BARBEIRO CORRETO)
+POST {{baseUrl}}/api/agendamentos
+Authorization: Bearer {{clienteToken}}
+Content-Type: {{contentType}}
+
+{
+  "barbeiroId": 21,  
+  "dataHoraInicio": "2025-01-20T10:00:00", 
+  "servicosIds": [13, 14]
+}

@@ -1,0 +1,95 @@
+### ==================================================
+### BARBEARIA API - FLUXO ADMINISTRADOR
+### ==================================================
+
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+# TOKEN DO ADMIN - Execute o login primeiro!
+@adminToken = {{admin_login.response.body.token}}
+
+### REGISTRAR ADMIN (se necessário)
+POST {{baseUrl}}/api/auth/register-admin
+Content-Type: {{contentType}}
+
+{
+  "email": "admin.completo@barber.com",
+  "password": "admin123"
+}
+
+### LOGIN COMO ADMINISTRADOR
+# @name admin_login
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "admin.completo@barbearia.com",
+  "password": "admin123"
+}
+
+> {%
+  if (response.status === 200) {
+    client.global.set("adminToken", response.body.token);
+    client.log("✅ Admin logado com sucesso!");
+    client.log("🎭 Role: " + response.body.role);
+  }
+%}
+
+### GERENCIAMENTO DE USUÁRIOS
+
+### Listar Todos os Usuários do Sistema
+GET {{baseUrl}}/api/admin/users
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+### Desativar/Ativar Usuário
+PATCH {{baseUrl}}/api/admin/users/2/toggle
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+### Excluir Usuário Permanentemente
+DELETE {{baseUrl}}/api/admin/users/3
+Authorization: Bearer {{adminToken}}
+
+### GERENCIAMENTO DE SERVIÇOS (Como Admin)
+
+### Listar Todos os Serviços Ativos do Sistema
+GET {{baseUrl}}/api/barbeiro/servicos/todos
+Authorization: Bearer {{adminToken}}
+
+### Ativar/Desativar Serviço
+PATCH {{baseUrl}}/api/barbeiro/servicos/1/toggle
+Authorization: Bearer {{adminToken}}
+
+### GERENCIAMENTO DE AGENDA (Como Admin)
+
+### Criar Horário de Trabalho - Segunda-feira
+POST {{baseUrl}}/api/barbeiro/agenda
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "diaSemana": "MONDAY",
+  "horaInicio": "09:00",
+  "horaFim": "18:00",
+  "horaAlmocoInicio": "12:00",
+  "horaAlmocoFim": "13:00"
+}
+
+### Listar Minha Agenda (Como Admin/Barbeiro)
+GET {{baseUrl}}/api/barbeiro/agenda
+Authorization: Bearer {{adminToken}}
+
+### CONSULTAS E RELATÓRIOS
+
+### Listar Todos os Barbeiros Ativos
+GET {{baseUrl}}/api/barbeiros
+Authorization: Bearer {{adminToken}}
+
+### Debug - Contexto de Segurança
+GET {{baseUrl}}/api/debug/security-context
+Authorization: Bearer {{adminToken}}
+
+### HEALTH CHECK
+GET {{baseUrl}}/actuator/health
+Authorization: Bearer {{adminToken}}

@@ -1,0 +1,139 @@
+### ==================================================
+### BARBEARIA API - FLUXO BARBEIRO
+### ==================================================
+
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+# 🔐 TOKEN DO BARBEIRO - Execute o login primeiro!
+@barbeiroToken = {{barbeiro_login.response.body.token}}
+
+### REGISTRAR BARBEIRO (se necessário)
+POST {{baseUrl}}/api/auth/register-barbeiro
+Content-Type: {{contentType}}
+
+{
+  "email": "barbeiro.completo@gmail.com",
+  "password": "barbeiro123"
+}
+
+### LOGIN COMO BARBEIRO
+# @name barbeiro_login
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "barbeiro.completo@gmail.com",
+  "password": "barbeiro123"
+}
+
+> {%
+  if (response.status === 200) {
+    client.global.set("barbeiroToken", response.body.token);
+    client.log("✅ Barbeiro logado com sucesso!");
+    client.log("🎭 Role: " + response.body.role);
+  }
+%}
+
+### GERENCIAMENTO DE SERVIÇOS
+
+### Criar Serviço - Corte Social
+# @name criar_servico_corte
+POST {{baseUrl}}/api/barbeiro/servicos
+Authorization: Bearer {{barbeiroToken}}
+Content-Type: {{contentType}}
+
+{
+  "nome": "Corte Social",
+  "descricao": "Corte de cabelo tradicional masculino",
+  "valor": 30.00,
+  "tempoEstimadoMinutos": 30
+}
+
+### Criar Serviço - Barba
+POST {{baseUrl}}/api/barbeiro/servicos
+Authorization: Bearer {{barbeiroToken}}
+Content-Type: {{contentType}}
+
+{
+  "nome": "Barba",
+  "descricao": "Aparar e modelar barba",
+  "valor": 20.00,
+  "tempoEstimadoMinutos": 20
+}
+
+### Criar Serviço - Pacote Completo
+POST {{baseUrl}}/api/barbeiro/servicos
+Authorization: Bearer {{barbeiroToken}}
+Content-Type: {{contentType}}
+
+{
+  "nome": "Corte + Barba",
+  "descricao": "Pacote completo corte de cabelo e barba",
+  "valor": 45.00,
+  "tempoEstimadoMinutos": 50
+}
+
+### Listar Meus Serviços
+GET {{baseUrl}}/api/barbeiro/servicos
+Authorization: Bearer {{barbeiroToken}}
+
+### Listar Todos os Serviços Ativos do Sistema
+GET {{baseUrl}}/api/barbeiro/servicos/todos
+Authorization: Bearer {{barbeiroToken}}
+
+### Ativar/Desativar Serviço
+PATCH {{baseUrl}}/api/barbeiro/servicos/{{criar_servico_corte.response.body.id}}/toggle
+Authorization: Bearer {{barbeiroToken}}
+
+###  CONFIGURAÇÃO DE AGENDA
+
+### Criar Horário de Trabalho - Segunda-feira
+POST {{baseUrl}}/api/barbeiro/agenda
+Authorization: Bearer {{barbeiroToken}}
+Content-Type: {{contentType}}
+
+{
+  "diaSemana": "MONDAY",
+  "horaInicio": "09:00",
+  "horaFim": "18:00",
+  "horaAlmocoInicio": "12:00",
+  "horaAlmocoFim": "13:00"
+}
+
+### Criar Horário de Trabalho - Terça-feira
+POST {{baseUrl}}/api/barbeiro/agenda
+Authorization: Bearer {{barbeiroToken}}
+Content-Type: {{contentType}}
+
+{
+  "diaSemana": "TUESDAY",
+  "horaInicio": "09:00",
+  "horaFim": "18:00",
+  "horaAlmocoInicio": "12:00",
+  "horaAlmocoFim": "13:00"
+}
+
+### Listar Minha Agenda
+GET {{baseUrl}}/api/barbeiro/agenda
+Authorization: Bearer {{barbeiroToken}}
+
+###  VISUALIZAÇÃO DE AGENDAMENTOS
+
+### Listar Agendamentos do Barbeiro (CORRIGIDO)
+GET {{baseUrl}}/api/agendamentos/barbeiro
+Authorization: Bearer {{barbeiroToken}}
+
+### 6️⃣ 🔍 DEBUG E CONSULTAS
+
+### Debug - Contexto de Segurança
+GET {{baseUrl}}/api/debug/security-context
+Authorization: Bearer {{barbeiroToken}}
+
+### Listar Todos os Barbeiros Ativos
+GET {{baseUrl}}/api/barbeiros
+Authorization: Bearer {{barbeiroToken}}
+
+### Listar Serviços Públicos (NOVO)
+GET {{baseUrl}}/api/servicos
+Authorization: Bearer {{barbeiroToken}}
