@@ -15,5 +15,5 @@ public class AuthResponse {
         this.userId = userId;
         this.email = email;
         this.role = role;
-    }
+    } 
 }

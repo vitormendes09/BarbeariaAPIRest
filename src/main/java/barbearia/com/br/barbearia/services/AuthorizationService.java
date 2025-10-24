@@ -1,5 +1,7 @@
 package barbearia.com.br.barbearia.services;
 
+import barbearia.com.br.barbearia.exceptions.BusinessException;
+import barbearia.com.br.barbearia.exceptions.ResourceNotFoundException;
 import barbearia.com.br.barbearia.model.User;
 import barbearia.com.br.barbearia.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +23,19 @@ public class AuthorizationService implements UserDetailsService {
 
     private final UserRepository repository;
 
-    @Override
+     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("Loading user by username: {}", username);
         
         User user = repository.findByEmail(username)
                 .orElseThrow(() -> {
                     log.error("User not found with email: {}", username);
-                    return new UsernameNotFoundException("User not found with email: " + username);
+                    return new ResourceNotFoundException("Usuário não encontrado");
                 });
         
         if (!user.getAtivo()) {
             log.warn("User is inactive: {}", username);
-            throw new UsernameNotFoundException("User is inactive: " + username);
+            throw new BusinessException("Usuário inativo");
         }
         
         Collection<GrantedAuthority> authorities = Collections.singletonList(
